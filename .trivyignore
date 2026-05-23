@@ -1,0 +1,19 @@
+# Trivy Ignore File
+# This file is used to ignore known vulnerabilities that are:
+# - False positives
+# - Acceptable risks in the context
+# - Already mitigated
+# 
+# Format:
+# AVD-XXXX (or CVE-XXXX)
+# 
+# Example:
+# AVD-AZU-0001
+# CVE-2021-12345
+
+# Add vulnerabilities to ignore below
+# Make sure to document WHY each vulnerability is being ignored
+
+# Example entries (uncomment if needed):
+# CVE-2023-12345  # False positive in unused dependency
+# AVD-AWS-0001    # AWS-specific issue mitigated by configuration

@@ -1,0 +1,131 @@
+run:
+  timeout: 5m
+  go: '1.21'
+  tests: true
+  
+linters:
+  enable:
+    # Code quality
+    - gofmt
+    - goimports
+    - govet
+    - ineffassign
+    - deadcode
+    - varcheck
+    - structcheck
+    - gosimple
+    - staticcheck
+    - unused
+    - unconvert
+    - gocyclo
+    - dupl
+    - goconst
+    - misspell
+    - unparam
+    
+    # Security
+    - gosec
+    - nolintlint
+    
+    # Style
+    - revive
+    - stylecheck
+    - noctx
+    - dogsled
+    
+  disable-all: false
+  fast: false
+
+linters-settings:
+  gocyclo:
+    min-complexity: 15
+  
+  dupl:
+    threshold: 150
+  
+  funlen:
+    lines: 100
+    statements: 50
+  
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+  
+  gosec:
+    severity: "medium"
+    confidence: "medium"
+    exclude-generated: false
+  
+  goimports:
+    local-prefixes: "github.com/fiap"
+  
+  revive:
+    enable-all-rules: false
+    rules:
+      - name: blank-imports
+        severity: warning
+      - name: context-as-argument
+        severity: warning
+      - name: context-keys-type
+        severity: warning
+      - name: dot-imports
+        severity: warning
+      - name: empty-block
+        severity: warning
+      - name: error-naming
+        severity: warning
+      - name: error-return
+        severity: warning
+      - name: error-strings
+        severity: warning
+      - name: errorf
+        severity: warning
+      - name: exported
+        severity: warning
+      - name: if-return
+        severity: info
+      - name: increment-decrement
+        severity: warning
+      - name: indent-error-flow
+        severity: warning
+      - name: package-comments
+        severity: warning
+      - name: range
+        severity: warning
+      - name: receiver-naming
+        severity: warning
+      - name: redefines-builtin-id
+        severity: warning
+      - name: superfluous-else
+        severity: info
+      - name: time-naming
+        severity: warning
+      - name: unexported-return
+        severity: warning
+      - name: unnecessary-break
+        severity: info
+      - name: var-declaration
+        severity: warning
+      - name: var-naming
+        severity: warning
+
+issues:
+  exclude-use-default: true
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  exclude:
+    - "should have a comment"
+    - "should be of type"
+  exclude-rules:
+    - path: "_test\\.go$"
+      linters:
+        - unused
+        - deadcode
+        - varcheck
+        - gosec
+        - dupl
+    - path: "mock_"
+      linters:
+        - unused
+        - deadcode
+        - varcheck
