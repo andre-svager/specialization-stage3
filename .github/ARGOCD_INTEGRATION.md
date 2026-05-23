@@ -58,28 +58,7 @@ ArgoCD dispara refresh quando recebe webhook do GitHub.
 **Vantagem:** Simples, direto
 **Desvantagem:** Requer acesso ao webhook do ArgoCD
 
-### Opção 2: Gitops Repository (Recomendado para Produção)
 
-Manter manifests em repositório separado. CI atualiza os manifests.
-
-```
-stage3/                        # App repo
-├── .github/workflows/
-│   └── ci-*.yml
-├── analytics-service/
-├── auth-service/
-...
-
-infrastructure/                # GitOps repo
-├── apps/
-│   ├── analytics/kustomization.yaml
-│   ├── auth/kustomization.yaml
-│   ...
-└── argocd-appset/appset.yaml
-```
-
-**Vantagem:** Declarativo, auditável, seguro
-**Desvantagem:** Requer 2 repositórios
 
 ### Opção 3: Image Update Automation (Flux / ArgoCD Image Updater)
 

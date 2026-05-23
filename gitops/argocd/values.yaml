@@ -1,0 +1,80 @@
+# Helm values para ArgoCD
+# Customização da instalação via Helm
+
+global:
+  domain: argocd.local
+
+configs:
+  secret:
+    createSecret: true
+  
+  params:
+    server.insecure: false
+    server.disable.auth: false
+    application.instanceLabelKey: argocd.argoproj.io/instance
+    
+  rbac:
+    policy.default: role:readonly
+    policy.csv: |
+      g, system:cluster-admins, role:admin
+      g, team:admins, role:admin
+      g, team:developers, role:developer
+      
+      p, role:developer, applications, create, */*, allow
+      p, role:developer, applications, get, */*, allow
+      p, role:developer, applications, update, */*, allow
+      p, role:developer, applications, delete, */*, allow
+      p, role:developer, applications, sync, */*, allow
+
+server:
+  replicas: 2
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+  
+  service:
+    type: LoadBalancer
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+  
+  ingress:
+    enabled: false
+    # Configurar conforme necessário
+    # hosts:
+    #   - argocd.example.com
+
+repoServer:
+  replicas: 2
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+
+applicationSet:
+  replicas: 2
+
+dex:
+  enabled: true
+
+redis:
+  enabled: true
+  replica:
+    enabled: true
+
+controller:
+  replicas: 1
+
+# Configurar monitoramento
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring
+
+# Configurar logs
+logging:
+  level: info
+  format: json

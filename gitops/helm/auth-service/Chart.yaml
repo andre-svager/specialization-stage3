@@ -1,0 +1,12 @@
+apiVersion: v2
+name: auth-service
+description: Authentication Service - Helm Chart
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - authentication
+  - golang
+maintainers:
+  - name: Your Organization
+    email: team@example.com
