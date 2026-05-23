@@ -121,26 +121,6 @@ output "dynamodb_table_arn" {
 
 # ========== SQS Outputs ==========
 
-output "main_queue_url" {
-  description = "Main SQS queue URL"
-  value       = module.messaging.main_queue_url
-}
-
-output "main_queue_arn" {
-  description = "Main SQS queue ARN"
-  value       = module.messaging.main_queue_arn
-}
-
-output "analytics_queue_url" {
-  description = "Analytics SQS queue URL"
-  value       = module.messaging.analytics_queue_url
-}
-
-output "analytics_queue_arn" {
-  description = "Analytics SQS queue ARN"
-  value       = module.messaging.analytics_queue_arn
-}
-
 output "evaluation_queue_url" {
   description = "Evaluation SQS queue URL"
   value       = module.messaging.evaluation_queue_url
