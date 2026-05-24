@@ -60,16 +60,6 @@ output "eks_oidc_issuer_url" {
 
 # ========== RDS Outputs ==========
 
-output "rds_analytics_endpoint" {
-  description = "Analytics RDS endpoint"
-  value       = module.databases.rds_analytics_endpoint
-}
-
-output "rds_analytics_address" {
-  description = "Analytics RDS address (hostname only)"
-  value       = module.databases.rds_analytics_address
-}
-
 output "rds_auth_endpoint" {
   description = "Auth RDS endpoint"
   value       = module.databases.rds_auth_endpoint
@@ -88,6 +78,16 @@ output "rds_flag_endpoint" {
 output "rds_flag_address" {
   description = "Flag RDS address (hostname only)"
   value       = module.databases.rds_flag_address
+}
+
+output "rds_target_endpoint" {
+  description = "Target RDS endpoint"
+  value       = module.databases.rds_target_endpoint
+}
+
+output "rds_target_address" {
+  description = "Target RDS address (hostname only)"
+  value       = module.databases.rds_target_address
 }
 
 # ========== ElastiCache Outputs ==========
@@ -163,9 +163,9 @@ output "ecr_target_service_url" {
 output "database_connection_strings" {
   description = "Database connection strings for services"
   value = {
-    analytics = "postgresql://${var.rds_username}:****@${module.databases.rds_analytics_address}:5432/analytics"
-    auth      = "postgresql://${var.rds_username}:****@${module.databases.rds_auth_address}:5432/auth"
-    flag      = "postgresql://${var.rds_username}:****@${module.databases.rds_flag_address}:5432/flag"
+    auth      = "postgresql://${var.rds_username}:****@${module.databases.rds_auth_address}:5432/auth_db"
+    flag      = "postgresql://${var.rds_username}:****@${module.databases.rds_flag_address}:5432/flags_db"
+    target    = "postgresql://${var.rds_username}:****@${module.databases.rds_target_address}:5432/targeting_db"
   }
   sensitive = true
 }

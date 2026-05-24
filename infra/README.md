@@ -116,7 +116,7 @@ terraform plan -target=module.databases -out=tfplan_databases
 ```
 
 Revise:
-- 3 instâncias RDS PostgreSQL (analytics, auth, flag)
+- 3 instâncias RDS PostgreSQL (auth, flag, target)
 - ElastiCache Redis
 - DynamoDB table
 
@@ -127,8 +127,8 @@ terraform plan -target=module.messaging -out=tfplan_messaging
 ```
 
 Revise:
-- 3 filas SQS (main, analytics, evaluation)
-- Dead Letter Queues (DLQ)
+- 1 fila SQS FIFO (evaluation)
+- Dead Letter Queue (DLQ)
 - CloudWatch alarms
 
 #### Passo 5: ECR
@@ -215,7 +215,7 @@ kubectl get nodes
 - **OIDC Provider:** Para IRSA (IAM Roles for Service Accounts)
 
 ### RDS PostgreSQL
-- **Instâncias:** 3 (analytics, auth, flag)
+- **Instâncias:** 3 (auth, flag, target)
 - **Versão:** 13
 - **Classe:** db.t3.small
 - **Storage:** 20GB (gp2)
@@ -236,8 +236,8 @@ kubectl get nodes
 
 ### SQS
 - **Tipo:** FIFO (para ordenação garantida)
-- **Filas:** main, analytics, evaluation
-- **DLQ:** Uma por fila (3 total)
+- **Filas:** evaluation
+- **DLQ:** evaluation-dlq
 - **Encryption:** Habilitada
 
 ### ECR

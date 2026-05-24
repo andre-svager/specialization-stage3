@@ -24,45 +24,14 @@ resource "aws_elasticache_subnet_group" "redis" {
 
 # ==================== RDS PostgreSQL Databases ====================
 
-# RDS 1: Analytics Service Database
-resource "aws_db_instance" "analytics" {
-  identifier            = "${var.environment}-analytics-db"
-  engine                = "postgres"
-  engine_version        = var.postgres_version
-  instance_class        = var.rds_instance_class
-  allocated_storage     = var.rds_allocated_storage
-  db_name               = "analytics"
-  username              = var.rds_username
-  password              = var.rds_password
-  parameter_group_name  = aws_db_parameter_group.postgres.name
-  db_subnet_group_name  = aws_db_subnet_group.rds.name
-  vpc_security_group_ids = [var.rds_security_group_id]
-  
-  multi_az               = var.multi_az
-  publicly_accessible    = false
-  skip_final_snapshot    = var.environment == "staging" ? true : false
-  backup_retention_period = var.backup_retention_days
-  backup_window          = "03:00-04:00"
-  maintenance_window     = "sun:04:00-sun:05:00"
-
-  storage_type      = "gp2"
-  storage_encrypted = true
-
-  tags = {
-    Name        = "${var.environment}-analytics-db"
-    Environment = var.environment
-    Service     = "analytics-service"
-  }
-}
-
-# RDS 2: Auth Service Database
+# RDS 1: Auth Service Database
 resource "aws_db_instance" "auth" {
   identifier            = "${var.environment}-auth-db"
   engine                = "postgres"
   engine_version        = var.postgres_version
   instance_class        = var.rds_instance_class
   allocated_storage     = var.rds_allocated_storage
-  db_name               = "auth"
+  db_name               = "auth_db"
   username              = var.rds_username
   password              = var.rds_password
   parameter_group_name  = aws_db_parameter_group.postgres.name
@@ -86,14 +55,14 @@ resource "aws_db_instance" "auth" {
   }
 }
 
-# RDS 3: Flag Service Database
+# RDS 2: Flag Service Database
 resource "aws_db_instance" "flag" {
   identifier            = "${var.environment}-flag-db"
   engine                = "postgres"
   engine_version        = var.postgres_version
   instance_class        = var.rds_instance_class
   allocated_storage     = var.rds_allocated_storage
-  db_name               = "flag"
+  db_name               = "flags_db"
   username              = var.rds_username
   password              = var.rds_password
   parameter_group_name  = aws_db_parameter_group.postgres.name
@@ -114,6 +83,37 @@ resource "aws_db_instance" "flag" {
     Name        = "${var.environment}-flag-db"
     Environment = var.environment
     Service     = "flag-service"
+  }
+}
+
+# RDS 3: Target Service Database
+resource "aws_db_instance" "target" {
+  identifier            = "${var.environment}-target-db"
+  engine                = "postgres"
+  engine_version        = var.postgres_version
+  instance_class        = var.rds_instance_class
+  allocated_storage     = var.rds_allocated_storage
+  db_name               = "targeting_db"
+  username              = var.rds_username
+  password              = var.rds_password
+  parameter_group_name  = aws_db_parameter_group.postgres.name
+  db_subnet_group_name  = aws_db_subnet_group.rds.name
+  vpc_security_group_ids = [var.rds_security_group_id]
+  
+  multi_az               = var.multi_az
+  publicly_accessible    = false
+  skip_final_snapshot    = var.environment == "staging" ? true : false
+  backup_retention_period = var.backup_retention_days
+  backup_window          = "03:00-04:00"
+  maintenance_window     = "sun:04:00-sun:05:00"
+
+  storage_type      = "gp2"
+  storage_encrypted = true
+
+  tags = {
+    Name        = "${var.environment}-target-db"
+    Environment = var.environment
+    Service     = "target-service"
   }
 }
 
@@ -183,10 +183,10 @@ resource "aws_cloudwatch_log_group" "redis_slow_log" {
 resource "aws_dynamodb_table" "toggle_master_analytics" {
   name           = var.environment == "production" ? "ToggleMasterAnalytics" : "${var.environment}-ToggleMasterAnalytics"
   billing_mode   = var.dynamodb_billing_mode
-  hash_key       = "id"
+  hash_key       = "event_id"
   
   attribute {
-    name = "id"
+    name = "event_id"
     type = "S"
   }
 

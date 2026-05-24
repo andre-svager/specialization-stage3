@@ -1,8 +1,3 @@
-output "rds_analytics_endpoint" {
-  description = "Analytics RDS endpoint"
-  value       = aws_db_instance.analytics.endpoint
-}
-
 output "rds_auth_endpoint" {
   description = "Auth RDS endpoint"
   value       = aws_db_instance.auth.endpoint
@@ -13,9 +8,9 @@ output "rds_flag_endpoint" {
   value       = aws_db_instance.flag.endpoint
 }
 
-output "rds_analytics_address" {
-  description = "Analytics RDS address"
-  value       = aws_db_instance.analytics.address
+output "rds_target_endpoint" {
+  description = "Target RDS endpoint"
+  value       = aws_db_instance.target.endpoint
 }
 
 output "rds_auth_address" {
@@ -28,9 +23,9 @@ output "rds_flag_address" {
   value       = aws_db_instance.flag.address
 }
 
-output "rds_analytics_port" {
-  description = "Analytics RDS port"
-  value       = aws_db_instance.analytics.port
+output "rds_target_address" {
+  description = "Target RDS address"
+  value       = aws_db_instance.target.address
 }
 
 output "rds_auth_port" {
@@ -41,6 +36,11 @@ output "rds_auth_port" {
 output "rds_flag_port" {
   description = "Flag RDS port"
   value       = aws_db_instance.flag.port
+}
+
+output "rds_target_port" {
+  description = "Target RDS port"
+  value       = aws_db_instance.target.port
 }
 
 output "redis_endpoint" {
