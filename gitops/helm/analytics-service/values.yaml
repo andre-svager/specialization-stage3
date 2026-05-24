@@ -78,7 +78,11 @@ env:
   - name: LOG_LEVEL
     value: "INFO"
   - name: ENVIRONMENT
-    value: "production"
+    value: "staging"
+  - name: DYNAMODB_TABLE_NAME
+    value: "staging-ToggleMasterAnalytics"
+  - name: SQS_QUEUE_URL
+    value: "https://sqs.us-east-1.amazonaws.com/123456789012/staging-evaluation-queue.fifo"
 
 # Database configuration
 database:
