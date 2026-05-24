@@ -42,7 +42,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ inputs.python_version }}
           cache: 'pip'
@@ -104,19 +104,19 @@ jobs:
           scan-type: 'fs'
           scan-ref: ${{ inputs.service_path }}
           format: 'sarif'
-          output: 'trivy-fs-results.sarif'
+          output: '${{ github.workspace }}/trivy-fs-results.sarif'
           severity: 'CRITICAL,HIGH'
 
       - name: SCA - Upload Trivy results to GitHub Security
-        if: always()
-        uses: github/codeql-action/upload-sarif@v2
+        if: always()  # Changed to always so it uploads even if code formatting failed earlier
+        uses: github/codeql-action/upload-sarif@v4  # Upgraded to v4 to fix deprecation warning
         with:
-          sarif_file: 'trivy-fs-results.sarif'
+          sarif_file: '${{ github.workspace }}/trivy-fs-results.sarif'
           category: 'trivy-fs-${{ inputs.service_name }}'
 
       - name: SCA - Fail if CRITICAL vulnerabilities found
         run: |
-          CRITICAL_COUNT=$(grep -c '"severity":"CRITICAL"' trivy-fs-results.sarif || true)
+          CRITICAL_COUNT=$(grep -c '"severity":"CRITICAL"' ${{ github.workspace }}/trivy-fs-results.sarif || true)
           if [ "$CRITICAL_COUNT" -gt 0 ]; then
             echo "❌ CRITICAL vulnerabilities found in source code!"
             exit 1
@@ -134,21 +134,21 @@ jobs:
       - name: Scan Docker image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
-          input: 'image.tar'
+          input: '${{ inputs.service_path }}/image.tar'
           format: 'sarif'
-          output: 'trivy-image-results.sarif'
+          output: '${{ github.workspace }}/trivy-image-results.sarif'
           severity: 'CRITICAL'
 
       - name: Upload Docker image scan results
         if: always()
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v4  # Upgraded to v4
         with:
-          sarif_file: 'trivy-image-results.sarif'
+          sarif_file: '${{ github.workspace }}/trivy-image-results.sarif'
           category: 'trivy-image-${{ inputs.service_name }}'
 
       - name: Fail if Docker image has CRITICAL vulnerabilities
         run: |
-          CRITICAL_COUNT=$(grep -c '"severity":"CRITICAL"' trivy-image-results.sarif || true)
+          CRITICAL_COUNT=$(grep -c '"severity":"CRITICAL"' ${{ github.workspace }}/trivy-image-results.sarif || true)
           if [ "$CRITICAL_COUNT" -gt 0 ]; then
             echo "❌ CRITICAL vulnerabilities found in Docker image!"
             exit 1
@@ -198,6 +198,7 @@ jobs:
           path: deployment-info.json
 
       - name: Print summary
+        if: always()
         run: |
           echo "## ✅ CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY

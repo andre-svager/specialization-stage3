@@ -10,12 +10,9 @@ linters:
     - goimports
     - govet
     - ineffassign
-    - deadcode
-    - varcheck
-    - structcheck
     - gosimple
     - staticcheck
-    - unused
+    - unused        # Replaces deadcode, varcheck, and structcheck
     - unconvert
     - gocyclo
     - dupl
@@ -120,12 +117,8 @@ issues:
     - path: "_test\\.go$"
       linters:
         - unused
-        - deadcode
-        - varcheck
         - gosec
         - dupl
     - path: "mock_"
       linters:
         - unused
-        - deadcode
-        - varcheck
