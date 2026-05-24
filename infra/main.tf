@@ -1,10 +1,14 @@
-# Remote TFSTATE
-backend "s3" {
+# Remote TFSTATE on S3 bucket
+terraform {
+  required_version = ">= 1.6.0"
+
+  backend "s3" {
     bucket       = "togglemaster-tfstate-9733-9718-1776"
     key          = "infra/terraform.tfstate"
     region       = "us-east-1"
     encrypt      = true
     use_lockfile = true
+  }
 }
 
 # Networking Module
