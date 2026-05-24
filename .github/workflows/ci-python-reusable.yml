@@ -74,7 +74,7 @@ jobs:
 
       - name: Upload bandit report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bandit-report-${{ inputs.service_name }}
           path: ${{ inputs.service_path }}/bandit-report.json
@@ -85,7 +85,7 @@ jobs:
 
       - name: Upload coverage reports
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report-${{ inputs.service_name }}
           path: ${{ inputs.service_path }}/htmlcov
@@ -192,7 +192,7 @@ jobs:
           cat deployment-info.json
 
       - name: Upload deployment info
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: deployment-info-${{ inputs.service_name }}
           path: deployment-info.json

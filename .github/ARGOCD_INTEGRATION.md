@@ -225,7 +225,7 @@ Arquivo: `.github/workflows/ci-analytics.yml` (adicionar ao final)
     
     steps:
       - name: Download deployment info
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: deployment-info-analytics-service
       

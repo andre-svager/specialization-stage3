@@ -92,7 +92,7 @@ jobs:
 
       - name: Upload coverage report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report-${{ inputs.service_name }}
           path: ${{ inputs.service_path }}/coverage.html
@@ -204,7 +204,7 @@ jobs:
           cat deployment-info.json
 
       - name: Upload deployment info
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: deployment-info-${{ inputs.service_name }}
           path: deployment-info.json
