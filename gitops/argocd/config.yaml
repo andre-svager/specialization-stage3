@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  # Enable application.instanceLabelKey in all namespaces
+  application.instanceLabelKey: argocd.argoproj.io/instance
+
+  # Repositórios
+  repositories: |
+    - type: git
+      url: https://github.com/andre-svager/specialization-stage3.git
+      name: gitops-repo
+      password: ''
+      username: ''
+
+  # Integração webhook
+  url: https://argocd.seu-dominio.com
+  
+  # Configurações de sincronização
+  application.resourceTrackingMethod: annotation
+  
+  # Timeout para sincronização
+  timeout.reconciliation: 180s
+  
+  # Notificações de healthcheck
+  server.repo.server.plaintext: 'false'
+  server.repo.server.strict.tls: 'true'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-ssh-known-hosts-cm
+  namespace: argocd
+data:
+  ssh_known_hosts: |
+    github.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQwcKllmDr2n/RQN5k+Z7HFdMqTjpqbz00Z0ghp1uyuKGPfWQjLQF2Z4aQK7JbPBnUKmMK8bV3MznSIM=
+    gitlab.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBFSMzNOWGIcII0pcapability6e1AcWZiF/ziHxQVrevzwMIeIiMLsDtgT9FrCFUCLUp7DdeCJD6qEpVHnM0cKoutXzsE=
+    bitbucket.org ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAubiN81eDcCgfbMsUtBjljPUT4THMzATuEYv4/sC9X1Pf3R+rXxzJBZBwXfR+w2mRnhMBsAFfMZVLDHlGjPgKj2xZCRbEdmRjXHrvRPCJUKcaGMrW63N0f8D6hq+Jf/W6OzJwQUcBLjSKZWWYzOPrJP1vfG3dFd4Gqa8bZHYuM5kfXx4/vO/9Hse9JqPYJVxFvxTXQWbBfUb3YjPNwVZBgYQKNjPSWARjpfAKnUqVCb8qPFJVGMkp7A8gJ1xTLKRPyXJZVvYrWkzjHWYJ1OD9Y8+MFBHQK7vu/8bxPw/5C3hZN7cqvdnH8YGRXDv5dLPdU1YPcKsvbOEAWtY3FKjVqnw==
+    ssh.gitlab.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDJT0vmj33VcIZFnTxPSWGxz+Vvfz0tnJ2WA4l7PwbeFc3M/Sn72EhhKvKULBFZq7Rn5TnQYGPuMzuGJsHGZE8pEQbVcxDy3D4+tEF1FODlOH4v+G8F14GQXe37RVJjNKxOZXA8d4bm8a/C1uN5xqJhVJ3xHFg2sLBhVLcSLvLrIXlFBcPzMH2hG2c+vMEPIzLiEoqPjGdtP/AV41HNQM3PgcfO6CWaWYL6nUK8pqKr5Zli1wczRp7xvCmUFEsEMeUvdSKhHwgHwxIyMdQxPRPcNKOQp8uBngK5wvPATgFxAzuBqLzWQkPLPjlZzxWQvT/vX8CIAKsL0dQqm7/0bRJAaOqeAH
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-tls-certs-cm
+  namespace: argocd
+data:
+  # Adicione certificados TLS customizados se necessário

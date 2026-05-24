@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argocd
+  labels:
+    name: argocd
+    app.kubernetes.io/name: argocd
+    app.kubernetes.io/instance: argocd
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argocd-system
+  labels:
+    name: argocd-system

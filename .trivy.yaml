@@ -1,0 +1,71 @@
+# Trivy configuration for FIAP Stage 3 CI/CD Pipeline
+
+# Severity levels to scan for
+severity:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+  - LOW
+
+# Types of scans
+scan-type: config
+format: sarif
+
+# Database configuration
+db-repository: ghcr.io/aquasecurity/trivy-db:latest
+java-db-repository: ghcr.io/aquasecurity/trivy-java-db:latest
+
+# Vulnerability scanner options
+vuln:
+  type:
+    - os
+    - library
+    - npm
+    - pip
+    - composer
+    - nuget
+    - gem
+    - yarn
+    - purl
+  severity:
+    - CRITICAL
+    - HIGH
+  skip-update: false
+  offline-scan: false
+
+# Configuration scanner options
+config:
+  exit-code: 0  # Don't fail on config issues (logged separately)
+  
+# Secret scanner
+secret:
+  scanners:
+    - aws-credentials
+    - github-pat
+    - jwt
+    - slack-bot-token
+    - stripe-api-key
+    - gcp-credentials
+
+# Image scanning
+image-config-scanners:
+  - config
+  - secret
+  
+# License scanning
+license:
+  full: false
+  confidence: 0.9
+
+# Ignore options
+ignorefile: .trivyignore
+
+# Report options
+exit-code: 1  # Fail on CRITICAL vulnerabilities
+skip-db-update: false
+
+# Cache options
+cache-dir: /tmp/trivy-cache
+
+# Timeout
+timeout: 10m

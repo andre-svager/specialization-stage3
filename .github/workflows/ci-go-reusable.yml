@@ -1,0 +1,229 @@
+name: Go CI Reusable Workflow
+
+on:
+  workflow_call:
+    inputs:
+      service_name:
+        required: true
+        type: string
+        description: Name of the service (e.g., auth-service)
+      service_path:
+        required: true
+        type: string
+        description: Path to the service directory
+      go_version:
+        required: false
+        type: string
+        default: '1.21'
+        description: Go version to use
+    secrets:
+      aws_account_id:
+        required: true
+      aws_region:
+        required: true
+      aws_access_key_id:
+        required: true
+      aws_secret_access_key:
+        required: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      security-events: write
+      packages: read
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ inputs.go_version }}
+          cache: true
+          cache-dependency-path: ${{ inputs.service_path }}/go.sum
+
+      - name: Download Go dependencies
+        working-directory: ${{ inputs.service_path }}
+        run: go mod download
+
+      - name: Verify Go modules
+        working-directory: ${{ inputs.service_path }}
+        run: go mod verify
+
+      - name: Run golangci-lint (linting & formatting)
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          working-directory: ${{ inputs.service_path }}
+          args: --timeout=5m --out-format=sarif > lint-report.sarif
+          skip-cache: false
+
+      - name: Upload golangci-lint report
+        if: always()
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: lint-report.sarif
+          category: 'golangci-lint-${{ inputs.service_name }}'
+
+      - name: Run gosec (security scanner)
+        working-directory: ${{ inputs.service_path }}
+        run: |
+          go install github.com/securego/gosec/v2/cmd/gosec@latest
+          gosec -no-fail -fmt=sarif -out=gosec-report.sarif ./... || true
+
+      - name: Upload gosec report
+        if: always()
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{ inputs.service_path }}/gosec-report.sarif
+          category: 'gosec-${{ inputs.service_name }}'
+
+      - name: Run unit tests
+        working-directory: ${{ inputs.service_path }}
+        run: |
+          go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+          go tool cover -html=coverage.out -o coverage.html
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report-${{ inputs.service_name }}
+          path: ${{ inputs.service_path }}/coverage.html
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ${{ inputs.service_path }}/coverage.out
+          flags: ${{ inputs.service_name }}
+          name: ${{ inputs.service_name }}-coverage
+          fail_ci_if_error: false
+
+      - name: SCA - Scan filesystem with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: ${{ inputs.service_path }}
+          format: 'sarif'
+          output: 'trivy-fs-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: SCA - Upload Trivy results to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-fs-results.sarif'
+          category: 'trivy-fs-${{ inputs.service_name }}'
+
+      - name: SCA - Fail if CRITICAL vulnerabilities found
+        run: |
+          CRITICAL_COUNT=$(grep -c '"severity":"CRITICAL"' trivy-fs-results.sarif || true)
+          if [ "$CRITICAL_COUNT" -gt 0 ]; then
+            echo "❌ CRITICAL vulnerabilities found in source code!"
+            exit 1
+          fi
+
+      - name: Build Go binary
+        working-directory: ${{ inputs.service_path }}
+        run: |
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o app .
+
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker image locally
+        working-directory: ${{ inputs.service_path }}
+        run: |
+          docker build -t ${{ inputs.service_name }}:${{ github.sha }} .
+          docker save ${{ inputs.service_name }}:${{ github.sha }} -o image.tar
+
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          input: 'image.tar'
+          format: 'sarif'
+          output: 'trivy-image-results.sarif'
+          severity: 'CRITICAL'
+
+      - name: Upload Docker image scan results
+        if: always()
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-image-results.sarif'
+          category: 'trivy-image-${{ inputs.service_name }}'
+
+      - name: Fail if Docker image has CRITICAL vulnerabilities
+        run: |
+          CRITICAL_COUNT=$(grep -c '"severity":"CRITICAL"' trivy-image-results.sarif || true)
+          if [ "$CRITICAL_COUNT" -gt 0 ]; then
+            echo "❌ CRITICAL vulnerabilities found in Docker image!"
+            exit 1
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.aws_access_key_id }}
+          aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
+          aws-region: ${{ secrets.aws_region }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker image to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ inputs.service_name }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          cd ${{ inputs.service_path }}
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "image_uri=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: Create deployment artifact
+        run: |
+          cat > deployment-info.json <<EOF
+          {
+            "service": "${{ inputs.service_name }}",
+            "image": "${{ env.image_uri }}",
+            "commit_sha": "${{ github.sha }}",
+            "commit_message": "${{ github.event.head_commit.message }}",
+            "timestamp": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          }
+          EOF
+          cat deployment-info.json
+
+      - name: Upload deployment info
+        uses: actions/upload-artifact@v3
+        with:
+          name: deployment-info-${{ inputs.service_name }}
+          path: deployment-info.json
+
+      - name: Print summary
+        run: |
+          echo "## ✅ CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Service:** ${{ inputs.service_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** ${{ env.image_uri }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Checks Completed" >> $GITHUB_STEP_SUMMARY
+          echo "✓ Dependencies downloaded" >> $GITHUB_STEP_SUMMARY
+          echo "✓ golangci-lint (linting & formatting)" >> $GITHUB_STEP_SUMMARY
+          echo "✓ gosec (security scan)" >> $GITHUB_STEP_SUMMARY
+          echo "✓ Unit tests (race detector)" >> $GITHUB_STEP_SUMMARY
+          echo "✓ Trivy filesystem scan (SCA)" >> $GITHUB_STEP_SUMMARY
+          echo "✓ Go binary build" >> $GITHUB_STEP_SUMMARY
+          echo "✓ Docker image build" >> $GITHUB_STEP_SUMMARY
+          echo "✓ Trivy image scan" >> $GITHUB_STEP_SUMMARY
+          echo "✓ Docker push to ECR" >> $GITHUB_STEP_SUMMARY

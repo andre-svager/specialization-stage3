@@ -1,0 +1,229 @@
+
+services:
+
+  # -----------------------------
+  # AUTH DATABASE
+  # -----------------------------
+  auth-db:
+    image: postgres:15
+    container_name: auth-db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth_user -d auth_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    env_file:
+      - ./auth-service/.env
+    volumes:
+      - auth_data:/var/lib/postgresql/data
+      - ./auth-service/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - togglemaster-net
+
+  # -----------------------------
+  # FLAG DATABASE
+  # -----------------------------
+  flag-db:
+    image: postgres:15
+    container_name: flag-db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flag_user -d flag_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    env_file:
+      - ./flag-service/.env
+    volumes:
+      - flag_data:/var/lib/postgresql/data
+      - ./flag-service/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - togglemaster-net
+
+  # -----------------------------
+  # TARGET DATABASE
+  # -----------------------------
+  target-db:
+    image: postgres:15
+    container_name: target-db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U target_user -d target_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    env_file:
+      - ./target-service/.env
+    volumes:
+      - target_data:/var/lib/postgresql/data
+      - ./target-service/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - togglemaster-net
+
+  # -----------------------------
+  # EVALUATION DATABASE
+  # -----------------------------
+  evaluation-db:
+    image: redis:7-alpine
+    container_name: evaluation-db
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - evaluation_data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - togglemaster-net
+
+# -----------------------------
+# LOCALSTACK (SQS + DYNAMODB)
+# -----------------------------
+  localstack:
+    image: localstack/localstack:latest
+    container_name: togglemaster-localstack
+    ports:
+      - "4566:4566"
+    environment:
+      SERVICES: sqs,dynamodb
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      DEBUG: 0
+      DOCKER_HOST: unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./infra/localstack/init.sh:/docker-entrypoint-initaws.d/init.sh
+      - localstack_data:/var/lib/localstack
+    healthcheck:
+      test: ["CMD", "awslocal", "sqs", "list-queues"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    networks:
+      - togglemaster-net
+
+  # -----------------------------
+  # AUTH SERVICE
+  # -----------------------------
+  auth-service:
+    build:
+      context: ./auth-service
+    container_name: auth-service
+    env_file:
+      - ./auth-service/.env
+    ports:
+      - "8001:8001"
+    depends_on:
+      auth-db:
+        condition: service_started
+    networks:
+      - togglemaster-net
+
+  # -----------------------------
+  # FLAG SERVICE
+  # -----------------------------
+  flag-service:
+    build:
+      context: ./flag-service
+    container_name: flag-service
+    env_file:
+      - ./flag-service/.env
+    ports:
+      - "8002:8002"
+    depends_on:
+      flag-db:
+        condition: service_started
+    networks:
+      - togglemaster-net
+
+  # -----------------------------
+  # TARGET SERVICE
+  # -----------------------------
+  target-service:
+    build:
+      context: ./target-service
+    container_name: target-service
+    env_file:
+      - ./target-service/.env
+    ports:
+      - "8003:8003"
+    depends_on:
+      target-db:
+        condition: service_started
+    networks:
+      - togglemaster-net
+
+  # -----------------------------
+  # EVALUATION SERVICE
+  # -----------------------------
+  evaluation-service:
+    build:
+      context: ./evaluation-service
+    container_name: evaluation-service
+    env_file:
+      - ./evaluation-service/.env
+    ports:
+      - "8004:8004"
+    depends_on:
+      evaluation-db:
+        condition: service_started
+      localstack:
+        condition: service_started
+    environment:
+      REDIS_HOST: evaluation-db
+      REDIS_PORT: 6379
+      AWS_ENDPOINT_URL: http://localstack:4566
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+    networks:
+      - togglemaster-net
+
+  # -----------------------------
+  # ANALYTICS SERVICE
+  # -----------------------------
+  analytics-service:
+    build:
+      context: ./analytics-service
+    container_name: analytics-service
+    env_file:
+      - ./analytics-service/.env
+    ports:
+      - "8005:8005"
+    depends_on:
+      localstack:
+        condition: service_healthy
+    environment:
+      AWS_ENDPOINT_URL: http://localstack:4566
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_SQS_URL: http://localstack:4566/000000000000/evaluation-events
+      AWS_DYNAMODB_TABLE: ToggleMasterAnalytics
+    entrypoint: ["sh", "-c", "sleep 20 && python app.py"]
+    networks:
+      - togglemaster-net
+
+# -----------------------------
+# VOLUMES
+# -----------------------------
+volumes:
+  auth_data:
+  flag_data:
+  target_data:
+  evaluation_data:
+  analytics_data:
+  localstack_data:
+
+# -----------------------------
+# NETWORK
+# -----------------------------
+networks:
+  togglemaster-net:
+    driver: bridge
