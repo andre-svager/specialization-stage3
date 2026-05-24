@@ -66,7 +66,7 @@ jobs:
 
       - name: Upload golangci-lint report
         if: always()
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: lint-report.sarif
           category: 'golangci-lint-${{ inputs.service_name }}'
@@ -79,7 +79,7 @@ jobs:
 
       - name: Upload gosec report
         if: always()
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ inputs.service_path }}/gosec-report.sarif
           category: 'gosec-${{ inputs.service_name }}'
@@ -116,7 +116,7 @@ jobs:
 
       - name: SCA - Upload Trivy results to GitHub Security
         if: always()
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-fs-results.sarif'
           category: 'trivy-fs-${{ inputs.service_name }}'
@@ -153,7 +153,7 @@ jobs:
 
       - name: Upload Docker image scan results
         if: always()
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-image-results.sarif'
           category: 'trivy-image-${{ inputs.service_name }}'

@@ -42,7 +42,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ inputs.python_version }}
           cache: 'pip'
@@ -109,7 +109,7 @@ jobs:
 
       - name: SCA - Upload Trivy results to GitHub Security
         if: always()
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-fs-results.sarif'
           category: 'trivy-fs-${{ inputs.service_name }}'
@@ -141,7 +141,7 @@ jobs:
 
       - name: Upload Docker image scan results
         if: always()
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-image-results.sarif'
           category: 'trivy-image-${{ inputs.service_name }}'
