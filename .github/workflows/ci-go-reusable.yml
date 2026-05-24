@@ -57,19 +57,18 @@ jobs:
         run: go mod verify
 
       - name: Run golangci-lint (linting & formatting)
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v6
         with:
           version: latest
           working-directory: ${{ inputs.service_path }}
-          args: --timeout=5m --out-format=sarif > lint-report.sarif
+          args: --out-format sarif:lint-report.sarif
           skip-cache: false
 
       - name: Upload golangci-lint report
-        if: always()
         uses: github/codeql-action/upload-sarif@v3
+        if: success() || failure() # Ensures it uploads even if code issues are found
         with:
           sarif_file: lint-report.sarif
-          category: 'golangci-lint-${{ inputs.service_name }}'
 
       - name: Run gosec (security scanner)
         working-directory: ${{ inputs.service_path }}
