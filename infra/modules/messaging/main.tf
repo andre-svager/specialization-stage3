@@ -14,6 +14,9 @@ resource "aws_sqs_queue" "evaluation" {
   tags = {
     Name        = "${var.environment}-evaluation-queue"
     Environment = var.environment
+    Project     = "evaluation-service"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -29,6 +32,9 @@ resource "aws_sqs_queue" "evaluation_dlq" {
   tags = {
     Name        = "${var.environment}-evaluation-queue-dlq"
     Environment = var.environment
+    Project     = "evaluation-service"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -56,5 +62,13 @@ resource "aws_cloudwatch_metric_alarm" "evaluation_queue_depth" {
 
   dimensions = {
     QueueName = aws_sqs_queue.evaluation.name
+  }
+
+  tags = {
+    Name        = "${var.environment}-cw-evaluation-queue-dlq"
+    Environment = var.environment
+    Project     = "evaluation-service"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }

@@ -20,6 +20,9 @@ resource "aws_iam_role" "eks_cluster_role" {
   tags = {
     Name        = "${var.environment}-eks-cluster-role"
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -58,6 +61,9 @@ resource "aws_eks_cluster" "main" {
   tags = {
     Name        = var.cluster_name
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -81,6 +87,9 @@ resource "aws_iam_role" "node_group_role" {
   tags = {
     Name        = "${var.environment}-eks-node-group-role"
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -110,7 +119,18 @@ resource "aws_launch_template" "node_group" {
     tags = {
       Name        = "${var.environment}-eks-node"
       Environment = var.environment
+      Project     = "ToggleMaster"
+      ManagedBy   = "Terraforms"
+      CreatedAt   = "2026-05-22"
     }
+  }
+  
+  tags = {
+    Name        = "${var.environment}-eks-node"
+    Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 
   lifecycle {
@@ -140,6 +160,9 @@ resource "aws_eks_node_group" "main" {
   tags = {
     Name        = "${var.environment}-node-group"
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 
   depends_on = [
@@ -162,6 +185,9 @@ resource "aws_iam_openid_connect_provider" "cluster" {
   tags = {
     Name        = "${var.environment}-eks-oidc-provider"
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 

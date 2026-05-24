@@ -34,13 +34,13 @@ variable "postgres_version" {
 variable "rds_instance_class" {
   description = "RDS instance class"
   type        = string
-  default     = "db.t3.small"
+  default     = "db.t3.micro"
 }
 
 variable "rds_allocated_storage" {
   description = "Allocated storage in GB"
   type        = number
-  default     = 20
+  default     = 5
 }
 
 variable "rds_username" {
@@ -64,7 +64,7 @@ variable "multi_az" {
 variable "backup_retention_days" {
   description = "Number of days to retain backups"
   type        = number
-  default     = 7
+  default     = 0
 }
 
 # ========== ElastiCache Variables ==========
@@ -98,11 +98,11 @@ variable "dynamodb_billing_mode" {
 variable "dynamodb_min_capacity" {
   description = "Minimum capacity units for PROVISIONED mode"
   type        = number
-  default     = 5
+  default     = 1
 }
 
 variable "dynamodb_max_capacity" {
   description = "Maximum capacity units for PROVISIONED mode"
   type        = number
-  default     = 40
+  default     = 2
 }

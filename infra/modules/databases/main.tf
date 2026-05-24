@@ -8,6 +8,9 @@ resource "aws_db_subnet_group" "rds" {
   tags = {
     Name        = "${var.environment}-rds-subnet-group"
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -19,6 +22,9 @@ resource "aws_elasticache_subnet_group" "redis" {
   tags = {
     Name        = "${var.environment}-redis-subnet-group"
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -29,7 +35,7 @@ resource "aws_db_instance" "auth" {
   identifier            = "${var.environment}-auth-db"
   engine                = "postgres"
   engine_version        = var.postgres_version
-  instance_class        = var.rds_instance_class
+  instance_class        = "db.t3.micro" #var.rds_instance_class
   allocated_storage     = var.rds_allocated_storage
   db_name               = "auth_db"
   username              = var.rds_username
@@ -38,10 +44,10 @@ resource "aws_db_instance" "auth" {
   db_subnet_group_name  = aws_db_subnet_group.rds.name
   vpc_security_group_ids = [var.rds_security_group_id]
   
-  multi_az               = var.multi_az
+  multi_az               = false #var.multi_az
   publicly_accessible    = false
   skip_final_snapshot    = var.environment == "staging" ? true : false
-  backup_retention_period = var.backup_retention_days
+  backup_retention_period = 0 #var.backup_retention_days
   backup_window          = "03:00-04:00"
   maintenance_window     = "sun:04:00-sun:05:00"
 
@@ -52,6 +58,9 @@ resource "aws_db_instance" "auth" {
     Name        = "${var.environment}-auth-db"
     Environment = var.environment
     Service     = "auth-service"
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -60,7 +69,7 @@ resource "aws_db_instance" "flag" {
   identifier            = "${var.environment}-flag-db"
   engine                = "postgres"
   engine_version        = var.postgres_version
-  instance_class        = var.rds_instance_class
+  instance_class        = "db.t3.micro" #var.rds_instance_class
   allocated_storage     = var.rds_allocated_storage
   db_name               = "flags_db"
   username              = var.rds_username
@@ -69,10 +78,10 @@ resource "aws_db_instance" "flag" {
   db_subnet_group_name  = aws_db_subnet_group.rds.name
   vpc_security_group_ids = [var.rds_security_group_id]
   
-  multi_az               = var.multi_az
+  multi_az               = false #var.multi_az
   publicly_accessible    = false
   skip_final_snapshot    = var.environment == "staging" ? true : false
-  backup_retention_period = var.backup_retention_days
+  backup_retention_period = 0 #var.backup_retention_days
   backup_window          = "03:00-04:00"
   maintenance_window     = "sun:04:00-sun:05:00"
 
@@ -83,6 +92,9 @@ resource "aws_db_instance" "flag" {
     Name        = "${var.environment}-flag-db"
     Environment = var.environment
     Service     = "flag-service"
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -91,7 +103,7 @@ resource "aws_db_instance" "target" {
   identifier            = "${var.environment}-target-db"
   engine                = "postgres"
   engine_version        = var.postgres_version
-  instance_class        = var.rds_instance_class
+  instance_class        = "db.t3.micro" #var.rds_instance_class
   allocated_storage     = var.rds_allocated_storage
   db_name               = "targeting_db"
   username              = var.rds_username
@@ -100,10 +112,10 @@ resource "aws_db_instance" "target" {
   db_subnet_group_name  = aws_db_subnet_group.rds.name
   vpc_security_group_ids = [var.rds_security_group_id]
   
-  multi_az               = var.multi_az
+  multi_az               = false #var.multi_az
   publicly_accessible    = false
   skip_final_snapshot    = var.environment == "staging" ? true : false
-  backup_retention_period = var.backup_retention_days
+  backup_retention_period = 0 #var.backup_retention_days
   backup_window          = "03:00-04:00"
   maintenance_window     = "sun:04:00-sun:05:00"
 
@@ -114,6 +126,9 @@ resource "aws_db_instance" "target" {
     Name        = "${var.environment}-target-db"
     Environment = var.environment
     Service     = "target-service"
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -135,6 +150,9 @@ resource "aws_db_parameter_group" "postgres" {
   tags = {
     Name        = "${var.environment}-postgres-params"
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -164,6 +182,9 @@ resource "aws_elasticache_cluster" "redis" {
   tags = {
     Name        = "${var.environment}-redis"
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -175,6 +196,9 @@ resource "aws_cloudwatch_log_group" "redis_slow_log" {
   tags = {
     Name        = "${var.environment}-redis-slow-log"
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -201,6 +225,9 @@ resource "aws_dynamodb_table" "toggle_master_analytics" {
   tags = {
     Name        = "ToggleMasterAnalytics"
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 

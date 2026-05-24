@@ -123,7 +123,7 @@ echo -e "${GREEN}✓${NC} Updated target-service/values.yaml"
 
 # Update Analytics Service (DynamoDB + SQS)
 if [ -f "gitops/helm/analytics-service/values.yaml" ]; then
-    sed -i.bak "s|value: \"staging-ToggleMasterAnalytics\"|value: \"$DYNAMODB_TABLE\"|g" gitops/helm/analytics-service/values.yaml
+    sed -i.bak "s|value: \"ToggleMasterAnalytics\"|value: \"$DYNAMODB_TABLE\"|g" gitops/helm/analytics-service/values.yaml
     sed -i.bak "s|value: \"https://sqs.*evaluation-queue.fifo\"|value: \"$SQS_QUEUE_URL\"|g" gitops/helm/analytics-service/values.yaml
     echo -e "${GREEN}✓${NC} Updated analytics-service/values.yaml"
 fi

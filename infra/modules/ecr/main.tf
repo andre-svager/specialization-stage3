@@ -17,6 +17,9 @@ resource "aws_ecr_repository" "analytics_service" {
     Name        = "analytics-service"
     Environment = var.environment
     Service     = "analytics-service"
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -37,6 +40,9 @@ resource "aws_ecr_repository" "auth_service" {
     Name        = "auth-service"
     Environment = var.environment
     Service     = "auth-service"
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -57,6 +63,9 @@ resource "aws_ecr_repository" "evaluation_service" {
     Name        = "evaluation-service"
     Environment = var.environment
     Service     = "evaluation-service"
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -77,6 +86,9 @@ resource "aws_ecr_repository" "flag_service" {
     Name        = "flag-service"
     Environment = var.environment
     Service     = "flag-service"
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -97,6 +109,9 @@ resource "aws_ecr_repository" "target_service" {
     Name        = "target-service"
     Environment = var.environment
     Service     = "target-service"
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 

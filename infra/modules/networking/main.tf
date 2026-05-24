@@ -9,6 +9,9 @@ resource "aws_vpc" "main" {
   tags = {
     Name        = "${var.environment}-vpc"
     Environment = var.environment
+    CreatedAt   = "2026-05-22"
+    ManagedBy   = "Terraforms"
+    Project     = "ToggleMaster" 
   }
 }
 
@@ -19,6 +22,9 @@ resource "aws_internet_gateway" "main" {
   tags = {
     Name        = "${var.environment}-igw"
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -29,6 +35,9 @@ resource "aws_eip" "nat" {
   tags = {
     Name        = "${var.environment}-nat-eip"
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 
   depends_on = [aws_internet_gateway.main]
@@ -42,6 +51,9 @@ resource "aws_nat_gateway" "main" {
   tags = {
     Name        = "${var.environment}-nat-gateway"
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 
   depends_on = [aws_internet_gateway.main]
@@ -60,6 +72,9 @@ resource "aws_subnet" "public" {
     Environment                                   = var.environment
     "kubernetes.io/role/elb"                      = "1"
     "kubernetes.io/cluster/${var.cluster_name}"   = "shared"
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -75,6 +90,9 @@ resource "aws_subnet" "private" {
     Environment                                   = var.environment
     "kubernetes.io/role/internal-elb"            = "1"
     "kubernetes.io/cluster/${var.cluster_name}"  = "shared"
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -90,6 +108,9 @@ resource "aws_route_table" "public" {
   tags = {
     Name        = "${var.environment}-public-rt"
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -105,6 +126,9 @@ resource "aws_route_table" "private" {
   tags = {
     Name        = "${var.environment}-private-rt"
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -131,6 +155,9 @@ resource "aws_security_group" "eks_control_plane" {
   tags = {
     Name        = "${var.environment}-eks-control-plane-sg"
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -163,6 +190,9 @@ resource "aws_security_group" "rds" {
   tags = {
     Name        = "${var.environment}-rds-sg"
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }
 
@@ -175,5 +205,8 @@ resource "aws_security_group" "elasticache" {
   tags = {
     Name        = "${var.environment}-elasticache-sg"
     Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
   }
 }

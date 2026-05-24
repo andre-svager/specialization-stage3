@@ -31,14 +31,14 @@ availability_zones = ["us-east-1a", "us-east-1b"]
 
 postgres_version = "13"
 
-rds_instance_class = "db.t3.small"
+rds_instance_class = "db.t3.micro"
 
 rds_allocated_storage = 20
 
 # IMPORTANT: Replace with secure passwords!
 # For production, use AWS Secrets Manager to manage passwords
 rds_username = "postgres"
-rds_password = "ChangeMe!Secure123"  # Change this to a secure password
+rds_password = "postgres"  # Change this to a secure password
 
 rds_multi_az = false
 

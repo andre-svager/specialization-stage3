@@ -10,7 +10,7 @@ data:
   # Repositórios
   repositories: |
     - type: git
-      url: https://github.com/seu-usuario/seu-gitops-repo.git
+      url: https://github.com/andre-svager/specialization-stage3.git
       name: gitops-repo
       password: ''
       username: ''

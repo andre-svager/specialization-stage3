@@ -48,7 +48,7 @@ cluster_name = "fiap-stage3-eks"
 
 # IMPORTANTE: Alterar a senha RDS!
 rds_username = "postgres"
-rds_password = "SuaSenhaForte@123"  # Mude isto!
+rds_password = "postgres"
 ```
 
 ### 3. Inicializar Terraform
