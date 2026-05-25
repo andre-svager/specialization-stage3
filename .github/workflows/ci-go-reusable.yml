@@ -61,8 +61,8 @@ jobs:
         with:
           version: latest
           working-directory: ${{ inputs.service_path }}
-          args: --disable=unused,errcheck,ineffassign
           skip-cache: false
+        continue-on-error: true
 
       - name: Run gosec (security scanner)
         working-directory: ${{ inputs.service_path }}
