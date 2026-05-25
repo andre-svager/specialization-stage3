@@ -2,10 +2,10 @@ package main
 
 import (
 	"database/sql"
-	_ "fmt"
 	"log"
 	"net/http"
 	"os"
+
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/joho/godotenv"
 )
