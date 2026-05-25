@@ -157,11 +157,14 @@ jobs:
         continue-on-error: true
 
       - name: Fail if Docker image has CRITICAL vulnerabilities
+        working-directory: ${{ inputs.service_path }}
         run: |
-          CRITICAL_COUNT=$(grep -c '"severity":"CRITICAL"' ${{ inputs.service_path }}/trivy-image-results.sarif || true)
-          if [ "$CRITICAL_COUNT" -gt 0 ]; then
-            echo "❌ CRITICAL vulnerabilities found in Docker image!"
-            exit 1
+          if [ -f trivy-image-results.sarif ]; then
+            CRITICAL_COUNT=$(grep -c '"severity":"CRITICAL"' trivy-image-results.sarif || true)
+            if [ "$CRITICAL_COUNT" -gt 0 ]; then
+              echo "❌ CRITICAL vulnerabilities found in Docker image!"
+              exit 1
+            fi
           fi
 
       - name: Configure AWS credentials
