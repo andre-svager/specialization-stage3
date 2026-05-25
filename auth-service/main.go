@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	_ "fmt"
 	"log"
 	"net/http"
 	"os"
@@ -12,8 +13,8 @@ import (
 
 // App struct (para injeção de dependência)
 type App struct {
-	DB         *sql.DB
-	MasterKey  string
+	DB        *sql.DB
+	MasterKey string
 }
 
 func main() {
@@ -44,8 +45,8 @@ func main() {
 	defer db.Close()
 
 	app := &App{
-		DB:         db,
-		MasterKey:  masterKey,
+		DB:        db,
+		MasterKey: masterKey,
 	}
 
 	// --- Rotas da API ---
