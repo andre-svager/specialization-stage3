@@ -42,7 +42,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ inputs.go_version }}
           cache: true
@@ -68,7 +68,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         if: success() || failure() # Ensures it uploads even if code issues are found
         with:
-          sarif_file: lint-report.sarif
+          sarif_file: ${{ inputs.service_path }}/lint-report.sarif
 
       - name: Run gosec (security scanner)
         working-directory: ${{ inputs.service_path }}
@@ -97,7 +97,7 @@ jobs:
           path: ${{ inputs.service_path }}/coverage.html
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           files: ${{ inputs.service_path }}/coverage.out
           flags: ${{ inputs.service_name }}
@@ -105,7 +105,7 @@ jobs:
           fail_ci_if_error: false
 
       - name: SCA - Scan filesystem with Trivy
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'fs'
           scan-ref: ${{ inputs.service_path }}
@@ -134,7 +134,7 @@ jobs:
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o app .
 
       - name: Setup Docker buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Build Docker image locally
         working-directory: ${{ inputs.service_path }}
@@ -143,9 +143,9 @@ jobs:
           docker save ${{ inputs.service_name }}:${{ github.sha }} -o image.tar
 
       - name: Scan Docker image with Trivy
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
-          input: 'image.tar'
+          input: '${{ inputs.service_path }}/image.tar'
           format: 'sarif'
           output: 'trivy-image-results.sarif'
           severity: 'CRITICAL'
@@ -190,16 +190,19 @@ jobs:
           echo "image_uri=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
 
       - name: Create deployment artifact
+        env:
+          SERVICE_NAME: ${{ inputs.service_name }}
+          IMAGE_URI: ${{ env.image_uri }}
+          COMMIT_SHA: ${{ github.sha }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          cat > deployment-info.json <<EOF
-          {
-            "service": "${{ inputs.service_name }}",
-            "image": "${{ env.image_uri }}",
-            "commit_sha": "${{ github.sha }}",
-            "commit_message": "${{ github.event.head_commit.message }}",
-            "timestamp": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          }
-          EOF
+          jq -n \
+            --arg svc "$SERVICE_NAME" \
+            --arg img "$IMAGE_URI" \
+            --arg sha "$COMMIT_SHA" \
+            --arg msg "$COMMIT_MESSAGE" \
+            --arg ts "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+            '{service: $svc, image: $img, commit_sha: $sha, commit_message: $msg, timestamp: $ts}' > deployment-info.json
           cat deployment-info.json
 
       - name: Upload deployment info
