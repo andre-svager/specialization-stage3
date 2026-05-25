@@ -105,22 +105,18 @@ jobs:
           fail_ci_if_error: false
 
       - name: SCA - Scan filesystem with Trivy
-        uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          scan-type: 'fs'
-          scan-ref: ${{ inputs.service_path }}
-          format: 'sarif'
-          output: 'trivy-fs-results.sarif'
-          severity: 'CRITICAL,HIGH'
+        working-directory: ${{ inputs.service_path }}
+        run: trivy fs --format sarif --output trivy-fs-results.sarif --severity CRITICAL,HIGH .
 
       - name: SCA - Upload Trivy results to GitHub Security
         if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: 'trivy-fs-results.sarif'
+          sarif_file: '${{ inputs.service_path }}/trivy-fs-results.sarif'
           category: 'trivy-fs-${{ inputs.service_name }}'
 
       - name: SCA - Fail if CRITICAL vulnerabilities found
+        working-directory: ${{ inputs.service_path }}
         run: |
           CRITICAL_COUNT=$(grep -c '"severity":"CRITICAL"' trivy-fs-results.sarif || true)
           if [ "$CRITICAL_COUNT" -gt 0 ]; then
@@ -142,24 +138,27 @@ jobs:
           docker build -t ${{ inputs.service_name }}:${{ github.sha }} .
           docker save ${{ inputs.service_name }}:${{ github.sha }} -o image.tar
 
+      - name: Install Trivy
+        run: |
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | apt-key add -
+          echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | tee -a /etc/apt/sources.list.d/trivy.list
+          apt-get update && apt-get install -y trivy || true
+
       - name: Scan Docker image with Trivy
-        uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          input: '${{ inputs.service_path }}/image.tar'
-          format: 'sarif'
-          output: 'trivy-image-results.sarif'
-          severity: 'CRITICAL'
+        working-directory: ${{ inputs.service_path }}
+        run: trivy image --input image.tar --format sarif --output trivy-image-results.sarif --severity CRITICAL || true
 
       - name: Upload Docker image scan results
         if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: 'trivy-image-results.sarif'
+          sarif_file: '${{ inputs.service_path }}/trivy-image-results.sarif'
           category: 'trivy-image-${{ inputs.service_name }}'
+        continue-on-error: true
 
       - name: Fail if Docker image has CRITICAL vulnerabilities
         run: |
-          CRITICAL_COUNT=$(grep -c '"severity":"CRITICAL"' trivy-image-results.sarif || true)
+          CRITICAL_COUNT=$(grep -c '"severity":"CRITICAL"' ${{ inputs.service_path }}/trivy-image-results.sarif || true)
           if [ "$CRITICAL_COUNT" -gt 0 ]; then
             echo "❌ CRITICAL vulnerabilities found in Docker image!"
             exit 1

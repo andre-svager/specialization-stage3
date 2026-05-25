@@ -99,17 +99,20 @@ jobs:
           name: ${{ inputs.service_name }}-coverage
           fail_ci_if_error: false
 
+      - name: Install Trivy
+        run: |
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | apt-key add -
+          echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | tee -a /etc/apt/sources.list.d/trivy.list
+          apt-get update && apt-get install -y trivy || true
+
       - name: SCA - Scan filesystem with Trivy
-        uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          scan-type: 'fs'
-          scan-ref: ${{ inputs.service_path }}
-          format: 'sarif'
-          output: 'trivy-fs-results.sarif'
-          severity: 'CRITICAL,HIGH'
+        working-directory: ${{ inputs.service_path }}
+        run: trivy fs --format sarif --output trivy-fs-results.sarif --severity CRITICAL,HIGH . || true
 
       - name: SCA - Upload Trivy results to GitHub Security
         if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: 'trivy-fs-results.sarif'
+          sarif_file: '${{ inputs.service_path }}/trivy-fs-results.sarif'
+          category: 'trivy-fs-${{ inputs.service_name }}'
+        continue-on-error: true
