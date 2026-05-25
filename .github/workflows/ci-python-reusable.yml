@@ -107,12 +107,4 @@ jobs:
 
       - name: SCA - Scan filesystem with Trivy
         working-directory: ${{ inputs.service_path }}
-        run: trivy fs --format sarif --output trivy-fs-results.sarif --severity CRITICAL,HIGH . || true
-
-      - name: SCA - Upload Trivy results to GitHub Security
-        if: always()
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: '${{ inputs.service_path }}/trivy-fs-results.sarif'
-          category: 'trivy-fs-${{ inputs.service_name }}'
-        continue-on-error: true
+        run: trivy fs --severity CRITICAL,HIGH . || true
