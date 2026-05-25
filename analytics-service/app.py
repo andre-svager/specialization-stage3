@@ -29,9 +29,7 @@ AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 
 
 if not all([AWS_REGION, SQS_QUEUE_URL, DYNAMODB_TABLE_NAME]):
-    log.critical(
-        "Erro: AWS_REGION, AWS_SQS_URL, e AWS_DYNAMODB_TABLE devem ser definidos."
-    )
+    log.critical("Erro: AWS_REGION, AWS_SQS_URL, e AWS_DYNAMODB_TABLE devem ser definidos.")
     sys.exit(1)
 
 # --- Clientes Boto3 ---
@@ -48,9 +46,7 @@ try:
 
     log.info(f"Clientes Boto3 inicializados na região {AWS_REGION}")
 except NoCredentialsError:
-    log.critical(
-        "Credenciais da AWS não encontradas. Verifique seu ambiente."
-    )
+    log.critical("Credenciais da AWS não encontradas. Verifique seu ambiente.")
     sys.exit(1)
 except Exception as e:
     log.critical(f"Erro ao inicializar o Boto3: {e}")
@@ -81,24 +77,16 @@ def process_message(message):
         # Insere no DynamoDB
         dynamodb_client.put_item(TableName=DYNAMODB_TABLE_NAME, Item=item)
 
-        log.info(
-            f"Evento {event_id} (Flag: {body['flag_name']}) salvo no DynamoDB."
-        )
+        log.info(f"Evento {event_id} (Flag: {body['flag_name']}) salvo no DynamoDB.")
 
         # Se tudo deu certo, deleta a mensagem da fila
-        sqs_client.delete_message(
-            QueueUrl=SQS_QUEUE_URL, ReceiptHandle=message["ReceiptHandle"]
-        )
+        sqs_client.delete_message(QueueUrl=SQS_QUEUE_URL, ReceiptHandle=message["ReceiptHandle"])
 
     except json.JSONDecodeError:
-        log.error(
-            f"Erro ao decodificar JSON da mensagem ID: {message['MessageId']}"
-        )
+        log.error(f"Erro ao decodificar JSON da mensagem ID: {message['MessageId']}")
         # Não deleta a mensagem, pode ser uma "poison pill"
     except ClientError as e:
-        log.error(
-            f"Erro do Boto3 (DynamoDB ou SQS) ao processar {message['MessageId']}: {e}"
-        )
+        log.error(f"Erro do Boto3 (DynamoDB ou SQS) ao processar {message['MessageId']}: {e}")
         # Não deleta a mensagem, tenta novamente
     except Exception as e:
         log.error(f"Erro inesperado ao processar {message['MessageId']}: {e}")
