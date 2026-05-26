@@ -82,7 +82,7 @@ env:
 
 # Database configuration
 database:
-  enabled: false
+  enabled: true
   host: staging-flag-db.c8k5zq8g0qxw.us-east-1.rds.amazonaws.com
   port: 5432
   name: flags_db
