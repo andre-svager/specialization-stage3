@@ -2,7 +2,7 @@
 replicaCount: 2
 
 image:
-  repository: 123456789012.dkr.ecr.us-east-1.amazonaws.com/flag-service
+  repository: 973397181776.dkr.ecr.us-east-1.amazonaws.com/flag-service
   pullPolicy: IfNotPresent
   tag: "latest"
 

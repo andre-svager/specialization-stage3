@@ -7,6 +7,8 @@ Estrutura modular de Terraform para provisionar a infraestrutura AWS completa do
 ```
 infra/
 ├── modules/
+qcleart
+
 │   ├── networking/        # VPC, subnets, IGW, NAT Gateway, security groups
 │   ├── eks/              # EKS cluster, node groups, OIDC provider
 │   ├── databases/        # 3x RDS PostgreSQL, ElastiCache Redis, DynamoDB

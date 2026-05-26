@@ -2,7 +2,7 @@
 replicaCount: 2
 
 image:
-  repository: 123456789012.dkr.ecr.us-east-1.amazonaws.com/evaluation-service
+  repository: 973397181776.dkr.ecr.us-east-1.amazonaws.com/evaluation-service
   pullPolicy: IfNotPresent
   tag: "latest"
 
@@ -82,7 +82,7 @@ env:
   - name: REDIS_URL
     value: "redis://staging-redis.c8k5zq8g0qxw.ng.0001.use1.cache.amazonaws.com:6379"
   - name: SQS_QUEUE_URL
-    value: "https://sqs.us-east-1.amazonaws.com/123456789012/staging-evaluation-queue.fifo"
+    value: "https://sqs.us-east-1.amazonaws.com/973397181776/staging-evaluation-queue.fifo"
 
 volumeMounts:
   - name: tmp

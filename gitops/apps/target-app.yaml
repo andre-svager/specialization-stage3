@@ -8,14 +8,14 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/seu-usuario/seu-gitops-repo.git
+    repoURL: https://github.com/andre-svager/specialization-stage3.git
     targetRevision: main
     path: gitops/helm/target-service
     helm:
       releaseName: target-service
       values: |
         image:
-          repository: 123456789012.dkr.ecr.us-east-1.amazonaws.com/target-service
+          repository: 973397181776.dkr.ecr.us-east-1.amazonaws.com/target-service
           tag: latest
   destination:
     server: https://kubernetes.default.svc

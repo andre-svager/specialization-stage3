@@ -156,6 +156,27 @@ resource "aws_db_parameter_group" "postgres" {
   }
 }
 
+# ElastiCache Parameter Group
+resource "aws_elasticache_parameter_group" "redis" {
+  family      = "redis6.x"
+  name        = "${var.environment}-redis-params"
+  description = "Custom parameter group for Redis ${var.redis_version}"
+
+  # Recommended parameters for production
+  parameter {
+    name  = "maxmemory-policy"
+    value = "allkeys-lru"
+  }
+
+  tags = {
+    Name        = "${var.environment}-redis-params"
+    Environment = var.environment
+    Project     = "ToggleMaster"
+    ManagedBy   = "Terraforms"
+    CreatedAt   = "2026-05-22"
+  }
+}
+
 # ==================== ElastiCache Redis ====================
 
 resource "aws_elasticache_cluster" "redis" {
@@ -164,7 +185,7 @@ resource "aws_elasticache_cluster" "redis" {
   engine_version       = var.redis_version
   node_type            = var.redis_node_type
   num_cache_nodes      = var.redis_num_nodes
-  parameter_group_name = "default.redis${substr(var.redis_version, 0, 3)}"
+  parameter_group_name = aws_elasticache_parameter_group.redis.name
   port                 = 6379
   subnet_group_name    = aws_elasticache_subnet_group.redis.name
   security_group_ids   = [var.elasticache_security_group_id]

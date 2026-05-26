@@ -13,7 +13,7 @@
 2. CI/CD PIPELINE (GitHub Actions)
    ├─ Build Docker image
    ├─ Run tests
-   ├─ Push para ECR: 123456789012.dkr.ecr.us-east-1.amazonaws.com/analytics-service:abc123
+   ├─ Push para ECR: 973397181776.dkr.ecr.us-east-1.amazonaws.com/analytics-service:abc123
    └─ Commit no repositório GitOps com nova tag de imagem
 
 3. GIT REPOSITORY (GitOps Repo)

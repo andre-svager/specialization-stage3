@@ -13,7 +13,7 @@ Use este checklist para garantir que tudo está configurado corretamente.
 
 No GitHub, ir em: **Settings → Secrets and variables → Actions**
 
-- [ ] `AWS_ACCOUNT_ID` - Ex: `123456789012`
+- [ ] `AWS_ACCOUNT_ID` - Ex: `973397181776`
 - [ ] `AWS_REGION` - Ex: `us-east-1`
 - [ ] `AWS_ACCESS_KEY_ID` - AWS IAM User access key
 - [ ] `AWS_SECRET_ACCESS_KEY` - AWS IAM User secret key
@@ -159,7 +159,7 @@ brew install act  # macOS
 choco install act  # Windows
 
 # Teste um workflow
-act -j build_and_test -s AWS_ACCOUNT_ID=123456789012 -s AWS_REGION=us-east-1
+act -j build_and_test -s AWS_ACCOUNT_ID=973397181776 -s AWS_REGION=us-east-1
 ```
 
 ## ✍️ Primeiro Teste

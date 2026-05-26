@@ -114,6 +114,15 @@ resource "aws_launch_template" "node_group" {
   name_prefix = "${var.environment}-eks-node-"
   description = "Launch template for EKS node group"
 
+  block_device_mappings {
+    device_name = "/dev/xvda"
+    ebs {
+      volume_size           = 50
+      volume_type           = "gp3"
+      delete_on_termination = true
+    }
+  }
+
   tag_specifications {
     resource_type = "instance"
     tags = {
@@ -124,7 +133,7 @@ resource "aws_launch_template" "node_group" {
       CreatedAt   = "2026-05-22"
     }
   }
-  
+
   tags = {
     Name        = "${var.environment}-eks-node"
     Environment = var.environment

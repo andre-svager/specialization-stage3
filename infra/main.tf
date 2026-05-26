@@ -89,7 +89,7 @@ module "ecr" {
 
   environment           = var.environment
   images_to_keep        = var.ecr_images_to_keep
-  eks_cluster_role_arn  = module.eks.cluster_id
+  eks_cluster_role_arn  = module.eks.node_group_role_arn
 
   depends_on = [module.eks]
 }
