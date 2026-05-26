@@ -244,7 +244,7 @@ Cada workflow gera:
 **Settings → Secrets → New repository secret**
 
 ```
-AWS_ACCOUNT_ID       = 123456789012
+AWS_ACCOUNT_ID       = 973397181776
 AWS_REGION           = us-east-1
 AWS_ACCESS_KEY_ID    = AKIA...
 AWS_SECRET_ACCESS_KEY = wJalr...

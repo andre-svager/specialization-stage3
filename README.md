@@ -3,7 +3,6 @@ Repository to store tech challenge of devops specialization stage 3
 ![Project definition steps](docs/devops_project_phases.svg)
 
 
-
 # Project Overview
 
 This project implements a complete Cloud Native and DevSecOps platform on AWS using:

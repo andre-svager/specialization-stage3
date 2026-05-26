@@ -105,7 +105,7 @@ env:
   - name: DYNAMODB_TABLE_NAME
     value: "staging-ToggleMasterAnalytics"  # ← Added
   - name: SQS_QUEUE_URL
-    value: "https://sqs.us-east-1.amazonaws.com/123456789012/staging-evaluation-queue.fifo"  # ← Added
+    value: "https://sqs.us-east-1.amazonaws.com/973397181776/staging-evaluation-queue.fifo"  # ← Added
 ```
 
 #### Evaluation Service (`gitops/helm/evaluation-service/values.yaml`)
@@ -116,7 +116,7 @@ env:
   - name: REDIS_URL
     value: "redis://staging-redis.c8k5zq8g0qxw.ng.0001.use1.cache.amazonaws.com:6379"  # ← Added
   - name: SQS_QUEUE_URL
-    value: "https://sqs.us-east-1.amazonaws.com/123456789012/staging-evaluation-queue.fifo"  # ← Added
+    value: "https://sqs.us-east-1.amazonaws.com/973397181776/staging-evaluation-queue.fifo"  # ← Added
 ```
 
 ### 6. Infrastructure Documentation Updates

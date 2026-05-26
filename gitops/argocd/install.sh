@@ -11,7 +11,7 @@ NC='\033[0m' # No Color
 
 # Configurações
 ARGOCD_NAMESPACE="argocd"
-ARGOCD_VERSION="${ARGOCD_VERSION:-v2.8.3}"
+ARGOCD_VERSION="${ARGOCD_VERSION:-9.5.15}"
 CLUSTER_NAME="${CLUSTER_NAME:-eks-cluster}"
 AWS_REGION="${AWS_REGION:-us-east-1}"
 
@@ -49,18 +49,20 @@ echo -e "${GREEN}✓ Helm repository atualizado${NC}"
 
 # 5. Instalar ArgoCD via Helm
 echo -e "${YELLOW}[5/7]${NC} Instalando ArgoCD..."
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 helm upgrade --install argocd argo/argo-cd \
   --namespace ${ARGOCD_NAMESPACE} \
-  --values argocd/values.yaml \
+  --values ${SCRIPT_DIR}/values.yaml \
   --version ${ARGOCD_VERSION} \
-  --wait
+  --wait \
+  --timeout 15m
 
 echo -e "${GREEN}✓ ArgoCD instalado${NC}"
 
 # 6. Aplicar configurações adicionais
 echo -e "${YELLOW}[6/7]${NC} Aplicando configurações..."
-kubectl apply -f argocd/rbac.yaml
-kubectl apply -f argocd/secret-management.yaml
+kubectl apply -f ${SCRIPT_DIR}/rbac.yaml
+kubectl apply -f ${SCRIPT_DIR}/secret-management.yaml
 echo -e "${GREEN}✓ Configurações aplicadas${NC}"
 
 # 7. Obter senha inicial

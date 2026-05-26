@@ -42,7 +42,7 @@ Arquivo gerado ao final do CI workflow com:
 ```json
 {
   "service": "analytics-service",
-  "image": "123456789012.dkr.ecr.us-east-1.amazonaws.com/analytics-service:abc123def456",
+  "image": "973397181776.dkr.ecr.us-east-1.amazonaws.com/analytics-service:abc123def456",
   "commit_sha": "abc123def456789",
   "commit_message": "feat: add new feature",
   "timestamp": "2026-05-23T10:30:45Z"
@@ -175,7 +175,7 @@ spec:
       serviceAccountName: analytics-sa
       containers:
       - name: analytics
-        image: "123456789012.dkr.ecr.us-east-1.amazonaws.com/analytics-service:latest"
+        image: "973397181776.dkr.ecr.us-east-1.amazonaws.com/analytics-service:latest"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000

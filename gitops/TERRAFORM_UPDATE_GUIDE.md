@@ -43,7 +43,7 @@ Single DynamoDB table for analytics service:
 **Terraform Output:**
 ```
 dynamodb_table_name = staging-ToggleMasterAnalytics
-dynamodb_table_arn = arn:aws:dynamodb:us-east-1:123456789012:table/staging-ToggleMasterAnalytics
+dynamodb_table_arn = arn:aws:dynamodb:us-east-1:973397181776:table/staging-ToggleMasterAnalytics
 ```
 
 ### 4. SQS Queue
@@ -54,8 +54,8 @@ Single FIFO SQS queue and Dead Letter Queue:
 
 **Terraform Output:**
 ```
-evaluation_queue_url = https://sqs.us-east-1.amazonaws.com/123456789012/staging-evaluation-queue.fifo
-evaluation_queue_arn = arn:aws:sqs:us-east-1:123456789012:staging-evaluation-queue.fifo
+evaluation_queue_url = https://sqs.us-east-1.amazonaws.com/973397181776/staging-evaluation-queue.fifo
+evaluation_queue_arn = arn:aws:sqs:us-east-1:973397181776:staging-evaluation-queue.fifo
 ```
 
 ## Updating Helm Values with Terraform Outputs
