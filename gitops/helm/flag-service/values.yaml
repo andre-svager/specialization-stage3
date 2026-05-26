@@ -17,7 +17,7 @@ serviceAccount:
 
 podAnnotations:
   prometheus.io/scrape: "true"
-  prometheus.io/port: "8000"
+  prometheus.io/port: "8002"
   prometheus.io/path: "/metrics"
 
 podSecurityContext:
@@ -34,8 +34,8 @@ securityContext:
 
 service:
   type: ClusterIP
-  port: 8000
-  targetPort: 8000
+  port: 8002
+  targetPort: 8002
 
 ingress:
   enabled: false
