@@ -101,7 +101,7 @@ volumes:
 livenessProbe:
   httpGet:
     path: /health
-    port: 8080
+    port: 8001
   initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5
@@ -109,8 +109,8 @@ livenessProbe:
 
 readinessProbe:
   httpGet:
-    path: /ready
-    port: 8080
+    path: /health
+    port: 8001
   initialDelaySeconds: 10
   periodSeconds: 5
   timeoutSeconds: 3
