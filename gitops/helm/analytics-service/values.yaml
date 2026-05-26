@@ -6,7 +6,8 @@ image:
   pullPolicy: IfNotPresent
   tag: "latest"
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: ecr-secret
 nameOverride: ""
 fullnameOverride: ""
 
@@ -17,7 +18,7 @@ serviceAccount:
 
 podAnnotations:
   prometheus.io/scrape: "true"
-  prometheus.io/port: "8000"
+  prometheus.io/port: "8005"
   prometheus.io/path: "/metrics"
 
 podSecurityContext:
@@ -79,10 +80,16 @@ env:
     value: "INFO"
   - name: ENVIRONMENT
     value: "staging"
+  - name: AWS_REGION
+    value: "us-east-1"
   - name: DYNAMODB_TABLE_NAME
     value: "ToggleMasterAnalytics"
+  - name: AWS_DYNAMODB_TABLE
+    value: "ToggleMasterAnalytics"
   - name: SQS_QUEUE_URL
-    value: "https://sqs.us-east-1.amazonaws.com/9733-9718-1776/staging-evaluation-queue.fifo"
+    value: "https://sqs.us-east-1.amazonaws.com/973397181776/staging-evaluation-queue.fifo"
+  - name: AWS_SQS_URL
+    value: "https://sqs.us-east-1.amazonaws.com/973397181776/staging-evaluation-queue.fifo"
 
 # Database configuration
 database:
@@ -106,7 +113,7 @@ volumes:
 livenessProbe:
   httpGet:
     path: /health
-    port: 8000
+    port: 8005
   initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5
@@ -114,8 +121,8 @@ livenessProbe:
 
 readinessProbe:
   httpGet:
-    path: /ready
-    port: 8000
+    path: /health
+    port: 8005
   initialDelaySeconds: 10
   periodSeconds: 5
   timeoutSeconds: 3
