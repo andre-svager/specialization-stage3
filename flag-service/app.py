@@ -38,7 +38,7 @@ except psycopg2.OperationalError as e:
 
 # --- Middleware de Autenticação ---
 def require_auth(f):
-    """ Middleware para validar a chave de API contra o auth-service"""
+    """  Middleware para validar a chave de API contra o auth-service"""
 
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -55,7 +55,7 @@ def require_auth(f):
                 timeout=3,
             )
 
-            if response.status_code != 201:
+            if response.status_code != 200:
                 log.warning(
                     f"Falha na validação da chave (status: {response.status_code})"
                 )
