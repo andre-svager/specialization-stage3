@@ -48,3 +48,8 @@ output "cluster_security_group_id" {
   description = "EKS cluster security group ID"
   value       = one(aws_eks_cluster.main.vpc_config[0].security_group_ids)
 }
+
+output "node_group_role_arn" {
+  description = "IAM role ARN for EKS node group"
+  value       = aws_iam_role.node_group_role.arn
+}

@@ -34,6 +34,7 @@ variable "availability_zones" {
 variable "cluster_name" {
   description = "EKS cluster name"
   type        = string
+  default     = "togglemaster-cluster"
 }
 
 variable "kubernetes_version" {
@@ -45,7 +46,7 @@ variable "kubernetes_version" {
 variable "node_instance_type" {
   description = "EC2 instance type for EKS nodes"
   type        = string
-  default     = "t3.medium"
+  default     = "t3.micro"
 }
 
 variable "node_desired_size" {
@@ -115,7 +116,7 @@ variable "rds_backup_retention_days" {
 variable "redis_version" {
   description = "Redis version"
   type        = string
-  default     = "7.0"
+  default     = "6.2"
 }
 
 variable "redis_node_type" {
