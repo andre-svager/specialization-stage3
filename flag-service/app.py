@@ -55,7 +55,7 @@ def require_auth(f):
                 timeout=3,
             )
 
-            if response.status_code != 200:
+            if response.status_code != 201:
                 log.warning(
                     f"Falha na validação da chave (status: {response.status_code})"
                 )
