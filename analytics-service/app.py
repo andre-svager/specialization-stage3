@@ -57,7 +57,7 @@ except Exception as e:
 
 
 def process_message(message):
-    """Processa uma única mensagem SQS e a insere no DynamoDB """
+    """Processa uma única mensagem SQS e a insere no DynamoDB"""
     try:
         log.info(f"Processando mensagem ID: {message['MessageId']}")
         body = json.loads(message["Body"])
