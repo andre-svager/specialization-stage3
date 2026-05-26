@@ -91,7 +91,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v4.5.0
         with:
           files: ${{ inputs.service_path }}/coverage.xml
           flags: ${{ inputs.service_name }}
